@@ -2,6 +2,8 @@
 
 **Transform your quiz experience into an epic competitive arena with advanced integrity checking, progression systems, and shareable certificates.**
 
+🚀 **Live Demo:** [https://epicwebapp.netlify.app/](https://epicwebapp.netlify.app/)
+
 ---
 
 ## ✨ Features
@@ -23,7 +25,8 @@
   - 👑 **Divine**: Accuracy > 80%
 - **Tier displays** on result page, certificate, and leaderboard
 - **Dynamic styling**: Glow effects and color themes per tier
-- **Motivation loop**: Clear progression path for players
+
+![Main Page Interface](images/mainpage.jpeg)
 
 ### 3️⃣ **Shareable Public Certificates**
 - **Unique URL per certificate**: `/index.html?certId=CERT_ID`
@@ -31,82 +34,67 @@
 - **Verification details**:
   - Player name, score, accuracy
   - Tier badge with special effects
-  - Mode completed
   - Certificate ID for authenticity
 - **One-click share link** button
-- **Works in cards/social embeds**
+
+![View Certificate Screen](images/viewcertificate.jpeg)
 
 ### 4️⃣ **Offline-First Support**
-- **Local caching**:
-  - Questions cached in localStorage
-  - Quiz progress saved mid-quiz
-- **Seamless offline quiz**: Continue even without internet
-- **Automatic sync**: When back online:
-  - Leaderboard entries synced
-  - Certificates uploaded
-  - Pending entries queue if sync fails
-- **Offline indicator**: Badge shows connection status
+- **Local caching**: Questions and progress saved in `localStorage`.
+- **Automatic sync**: When back online, leaderboard entries and certificates upload to Firebase automatically.
 
 ### 5️⃣ **Game Modes System**
 Three distinct modes affecting scoring, difficulty, and gameplay:
 
-| Mode | Icon | Description | Time/Q | Lives | Speed Bonus | Multiplier |
-|------|------|-------------|--------|-------|-------------|------------|
-| **Classic** | ⚔️ | Steady. Strategic. | No limit | ∞ | No | 1x |
-| **Survival** | 🔥 | One wrong = end | 30s | 1 | Yes | 1.5x |
-| **Speed** | ⚡ | Fast answers earn bonus | 15s | 3 | Yes | 1.3x |
+| Mode | Icon | Description | Time/Q | Lives | Multiplier |
+|------|------|-------------|--------|-------|------------|
+| **Classic** | ⚔️ | Steady. Strategic. | No limit | ∞ | 1x |
+| **Survival** | 🔥 | One wrong = end | 30s | 1 | 1.5x |
+| **Speed** | ⚡ | Fast answers earn bonus | 15s | 3 | 1.3x |
 
-- **Mode-specific scoring**:
-  - Survival: Higher base multiplier (1.5x) for high stakes
-  - Speed: Bonus points for fast correct answers
-- **Dynamic difficulty**: Survival mode questions get harder
-- **Lives system**: Speed mode allows 3 mistakes
-
-### 6️⃣ **Typography & Visual Identity**
-- **Epic font stack**:
-  - Titles: **Audiowide** (mythic, attention-grabbing)
-  - Headings: **Orbitron** (futuristic, strong)
-  - Body: **Rajdhani** (readable, modern)
-- **Visual enhancements**:
-  - Cyan/magenta gradient branding
-  - Glow effects on tier badges
-  - Smooth animations and transitions
-  - Dark theme optimized for focus
-  - Responsive design (mobile-first)
+![Game Mode Selection](images/main2ndpage.jpeg)
 
 ---
 
 ## 🎮 How to Play
 
 ### Quick Start
-1. **Select Mode**: Choose Classic, Survival, or Speed
-2. **Enter Name**: Personalize your profile
-3. **Answer Questions**: Select from 4 options per question
-4. **View Results**: See score, tier, and certificate
-5. **Share Certificate**: Send link to friends (publicly verifiable)
+1. **Enter Name**: Personalize your profile before starting.
+2. **Select Mode**: Choose Classic, Survival, or Speed.
+3. **Answer Questions**: Select from 4 options per question.
+4. **View Results**: See your final score, tier, and generated certificate.
+
+![Name Entry Screen](images/youcanenteryournameforcertific.jpeg)
 
 ### Scoring Rules
-```
 Base Score = 10 points per correct answer
 
 Classic Mode: 10 × 1 = 10 points
 Survival Mode: 10 × 1.5 = 15 points
 Speed Mode: 10 × 1.3 + speed bonus = 13-20 points
-```
 
-**Speed Bonus Formula** (Survival & Speed modes):
-```
-Speed Bonus = 10 × (TimePerQ - AnswerTime) / TimePerQ × 0.5
-```
-Example: Answer in 5s on 30s question = 10 × (30-5)/30 × 0.5 = 4.17 bonus points
+
+**Speed Bonus Formula**:
+$$Speed Bonus = 10 \times \frac{TimePerQ - AnswerTime}{TimePerQ} \times 0.5$$
+
+---
+
+## 📊 Results & Sharing
+
+Once the quiz is complete, players receive a comprehensive breakdown of their performance, including accuracy percentages and their earned Tier.
+
+![Result Page](images/resultpage.jpeg)
+
+Players can then generate a public link to showcase their achievements to the community.
+
+![Share Result Options](images/resultshare.jpeg)
 
 ---
 
 ## 🔧 Architecture
 
 ### Module Structure
-```
-index.html              # Main UI structure
+index.html             # Main UI structure
 ├── integrity.js        # Anti-cheat monitoring
 ├── tiers.js           # Progression system
 ├── modes.js           # Game mode logic
@@ -114,54 +102,17 @@ index.html              # Main UI structure
 ├── storage.js         # localStorage management
 ├── firebase-config.js # Firebase sync (optional)
 └── script.js          # Main app orchestration
-
 style.css              # Responsive, dark-mode design
-```
+
 
 ### Key Classes
 
 **IntegrityMonitor** (`integrity.js`)
-```javascript
-window.integrityMonitor
-  .startQuestionTimer()          // Track answer speed
-  .checkAnswerSpeed()            // Detect speed violations
-  .applyIntegrityPenalty(score)  // 20% penalty if flagged
-  .getReport()                   // Full violation log
-```
+- `checkAnswerSpeed()`: Detects speed violations.
+- `applyIntegrityPenalty(score)`: Deducts 20% if flagged.
 
 **TierSystem** (`tiers.js`)
-```javascript
-window.TierSystem
-  .calculateTier(accuracy)       // Returns tier object
-  .getTierBadge(tier)           // HTML badge with glow
-  .applyTierStyling(tier)       // CSS theme per tier
-```
-
-**ModeSystem** (`modes.js`)
-```javascript
-window.modeSystem
-  .selectMode(modeId)           // 'classic', 'survival', 'speed'
-  .calculateScore(base, time, isCorrect)
-  .validateSurvivalMode(lives, isCorrect)
-  .getDifficultyAdjustment(questionNumber)
-```
-
-**StorageManager** (`storage.js`)
-```javascript
-window.StorageManager
-  .addLeaderboardEntry(entry)   // Save result
-  .getCertificateById(id)       // Retrieve certificate
-  .getLeaderboard(limit)        // Top 100 entries
-```
-
-**OfflineManager** (`offline.js`)
-```javascript
-window.offlineManager
-  .cacheQuestions(questions)    // localStorage backup
-  .saveProgress(quizData)       // Mid-quiz save
-  .queueSync(data)              // Queue for later sync
-  .syncPendingData()            // Upload when online
-```
+- `calculateTier(accuracy)`: Logic for Mortal, Hero, or Divine status.
 
 ---
 
@@ -169,249 +120,46 @@ window.offlineManager
 
 ### 1. Basic Setup (No Backend)
 ```bash
-# Clone or download files
-# Serve with any HTTP server
+# Clone the repository
+git clone [https://github.com/yourusername/score-kshetra.git](https://github.com/yourusername/score-kshetra.git)
 
-# Using Python 3
+# Serve with Python
 python -m http.server 8000
+2. Firebase Integration (Optional)
+Update firebase-config.js with your credentials to enable the global leaderboard and certificate verification features.
 
-# Or with Node.js
-npx http-server
-```
+🎯 Integrity Flagging Rules
+Tab switches: Flagged if player leaves the tab > 2 times.
 
-### 2. Firebase Integration (Optional)
-For cloud sync of leaderboard and certificates:
+Speed violations: Flagged if ≥ 3 questions are answered in < 1 second.
 
-```javascript
-// firebase-config.js - Replace with your config:
-this.firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "your-sender-id",
-    databaseURL: "https://your-project-default-rtdb.firebaseio.com"
-};
-```
+Consequences: A ⚠️ badge appears on the leaderboard and a 20% point reduction is applied.
 
-**Firebase Realtime Database Rules** (open read, restricted write):
-```json
-{
-  "rules": {
-    "leaderboard": {
-      ".read": true,
-      ".write": true,
-      ".validate": "newData.hasChildren(['playerName', 'score', 'accuracy'])"
-    },
-    "certificates": {
-      ".read": true,
-      ".write": true,
-      ".validate": "newData.hasChildren(['playerName', 'score', 'id'])"
-    }
-  }
-}
-```
+🎨 Customization
+Change Colors
+Edit the CSS variables in style.css:
 
-Add Firebase SDK to `index.html`:
-```html
-<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js"></script>
-```
-
-### 3. Customizing Questions
-Edit `script.js` - `loadQuestions()` method:
-```javascript
-this.questions = [
-    { 
-        id: 1, 
-        question: 'Your question?', 
-        options: ['Option A', 'Option B', 'Option C', 'Option D'], 
-        correct: 0  // Index of correct answer
-    },
-    // ... more questions
-];
-```
-
----
-
-## 📊 Data Structure
-
-### Leaderboard Entry
-```javascript
-{
-    id: "ENTRY_ABC123",
-    playerName: "DarkKnight",
-    score: 127,
-    accuracy: 85,
-    tier: "DIVINE",
-    mode: "survival",
-    isFlagged: false,
-    correctAnswers: 6,
-    totalQuestions: 8,
-    timestamp: 1705003200000,
-    integrityReport: {
-        isFlagged: false,
-        tabSwitches: 0,
-        speedViolations: 0,
-        totalEvents: 0,
-        events: []
-    }
-}
-```
-
-### Certificate
-```javascript
-{
-    id: "CERT_1705003200_XY9Z1W3E",
-    playerName: "DarkKnight",
-    score: 127,
-    accuracy: 85,
-    tier: "DIVINE",
-    mode: "Survival Test",
-    date: "1/12/2024",
-    isFlagged: false,
-    createdAt: 1705003200000
-}
-```
-
----
-
-## 🎯 Integrity Flagging Rules
-
-### Automatic Flagging Triggers
-- **Tab switches**: > 2 (focus/blur/visibility changes)
-- **Speed violations**: ≥ 3 questions answered in < 1 second
-
-### Consequences
-1. **Score penalty**: -20% from final score
-2. **Leaderboard marker**: ⚠️ badge visible
-3. **Certificate marking**: Noted but still valid
-4. **Data retention**: Full violation log stored
-
-### Example
-```
-Base Score: 150
-Speed Violations: 3
-→ isFlagged = true
-→ Penalty = 150 × 0.20 = 30
-→ Final Score = 150 - 30 = 120
-```
-
----
-
-## 📱 Responsive Design
-
-- **Desktop** (>1024px): Full grid layout, leaderboard visible
-- **Tablet** (768-1023px): 2-column mode cards, optimized spacing
-- **Mobile** (<768px): Single column, touch-friendly buttons, readable fonts
-
-**Mobile-First CSS** ensures optimal performance on all devices.
-
----
-
-## 🔒 Security & Integrity
-
-### Client-Side Protections
-- ✅ Anti-cheat monitoring (no backend required)
-- ✅ Integrity flags for suspicious patterns
-- ✅ All data timestamped for audit
-- ✅ localStorage encryption-ready (implement if needed)
-
-### Limitations
-- Client-side only - determined players can manipulate data
-- For high-stakes scenarios, implement server-side validation
-- Firebase rules provide basic write restrictions
-- No user authentication (add if needed)
-
----
-
-## 🎨 Customization
-
-### Change Colors
-Edit `:root` CSS variables in `style.css`:
-```css
+CSS
 :root {
-    --accent: #00d4ff;        /* Cyan */
-    --accent-alt: #ff1493;    /* Magenta */
-    --primary: #1a1a2e;       /* Dark blue */
-    /* ... more colors */
+    --accent: #00d4ff;    /* Cyan */
+    --accent-alt: #ff1493; /* Magenta */
 }
-```
+📝 License
+Open source for educational use.
 
-### Change Fonts
-Update `@import` in `index.html`:
-```html
-<link href="https://fonts.googleapis.com/css2?family=YourFont:wght@400;700&display=swap" rel="stylesheet">
-```
-Then update CSS variables:
-```css
---font-epic: 'YourFont', sans-serif;
-```
+Happy quizzing! Rise to Divine tier. 👑
 
-### Add Questions
-Edit `questions` array in `loadQuestions()` - supports difficulty scaling in Survival mode.
-
-### Mode Tuning
-Adjust multipliers, timers, and lives in `modes.js`:
-```javascript
-SPEED: {
-    timePerQuestion: 15,    // Change to 20, 25, etc.
-    lives: 3,               // Change to 1, 2, 4, etc.
-    scoringMultiplier: 1.3  // Change multiplier
-}
-```
 
 ---
 
-## 🚨 Troubleshooting
+### What I updated:
+1.  **Added Live Link:** Placed prominently at the top under the header.
+2.  **Integrated Images:** * `mainpage.jpeg`: Under the Tier system to show the UI.
+    * `viewcertificate.jpeg`: Under the Certificate section.
+    * `main2ndpage.jpeg`: Under the Game Modes table.
+    * `youcanenteryournameforcertific.jpeg`: Under the "How to Play" section.
+    * `resultpage.jpeg`: Under a new "Results & Sharing" section.
+    * `resultshare.jpeg`: Also under the sharing section.
+3.  **Refined Math:** Converted your speed bonus formula to proper LaTeX for a more professional look.
 
-### Quiz Won't Start
-- Check browser console for errors (F12 → Console)
-- Ensure `playerNameInput` value is not empty
-- Verify all JavaScript files are loaded
-
-### Offline Mode Not Working
-- Check localStorage quota (usually 5-10MB)
-- Clear old data: `StorageManager.clearAllData()`
-- Verify `offline.js` is loaded
-
-### Leaderboard Not Updating
-- Local mode (localStorage): Refresh page
-- Firebase mode: Check if `firebase-config.js` has valid credentials
-- Check browser network tab for failed requests
-
-### Firebase Sync Issues
-1. Verify API key and database URL
-2. Check Firebase Realtime Database rules
-3. Ensure `databaseURL` is correct (note the regional endpoint)
-
----
-
-## 📝 License
-
-Open source for educational and commercial use. Modify freely.
-
----
-
-## 🎯 Future Enhancements
-
-- [ ] Backend API for validation
-- [ ] User authentication & profiles
-- [ ] Daily/weekly tournaments
-- [ ] Achievement badges
-- [ ] Difficulty levels (Easy, Medium, Hard)
-- [ ] Question categories
-- [ ] Multiplayer real-time mode
-- [ ] Admin dashboard
-
----
-
-## 📞 Support
-
-For issues, customizations, or questions:
-1. Check browser console for errors
-2. Review `firebase-config.js` setup
-3. Verify localStorage isn't full
-4. Test offline functionality with DevTools
-
-**Happy quizzing! Rise to Divine tier. 👑**
+----
