@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Firebase Realtime Database - Connection Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Rajdhani', monospace;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #00d4ff;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .test-card {
+            background: rgba(26, 26, 46, 0.8);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+        .test-card.success {
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.1);
+        }
+        .test-card.error {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+        .test-card.warning {
+            border-color: #f39c12;
+            background: rgba(243, 156, 18, 0.1);
+        }
+        .test-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        .status-icon.ok { background: #2ecc71; }
+        .status-icon.fail { background: #e74c3c; }
+        .status-icon.wait { background: #f39c12; }
+        .status-text {
+            flex: 1;
+        }
+        .code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            border-left: 3px solid #00d4ff;
+            word-break: break-all;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        button {
+            background: linear-gradient(135deg, #00d4ff, #ff1493);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+        button:hover { opacity: 0.8; }
+        .log {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            margin-top: 1rem;
+        }
+        .log-entry {
+            margin: 0.3rem 0;
+            padding: 0.3rem 0;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+        }
+        .log-entry.error { color: #e74c3c; }
+        .log-entry.success { color: #2ecc71; }
+        .log-entry.warn { color: #f39c12; }
+        .log-entry.info { color: #00d4ff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Firebase Realtime Database Test</h1>
+        
+        <div class="test-grid">
+            <!-- Test 1: Firebase SDK Load -->
+            <div class="test-card" id="sdkTest">
+                <h3>📦 Firebase SDK</h3>
+                <div class="status">
+                    <div class="status-icon wait">⏳</div>
+                    <div class="status-text">Checking SDK load...</div>
+                </div>
+            </div>
+
+            <!-- Test 2: Firebase Config -->
+            <div class="test-card" id="configTest">
+                <h3>⚙️ Configuration</h3>
+                <div class="status">
+                    <div class="status-icon wait">⏳</div>
+                    <div class="status-text">Checking config...</div>
+                </div>
+            </div>
+
+            <!-- Test 3: App Initialization -->
+            <div class="test-card" id="appInitTest">
+                <h3>🚀 App Initialization</h3>
+                <div class="status">
+                    <div class="status-icon wait">⏳</div>
+                    <div class="status-text">Initializing...</div>
+                </div>
+            </div>
+
+            <!-- Test 4: Database Reference -->
+            <div class="test-card" id="dbRefTest">
+                <h3>🗄️ Database Reference</h3>
+                <div class="status">
+                    <div class="status-icon wait">⏳</div>
+                    <div class="status-text">Checking DB ref...</div>
+                </div>
+            </div>
+
+            <!-- Test 5: Connection Status -->
+            <div class="test-card" id="connectionTest">
+                <h3>🔗 Connection Status</h3>
+                <div class="status">
+                    <div class="status-icon wait">⏳</div>
+                    <div class="status-text">Connecting...</div>
+                </div>
+            </div>
+
+            <!-- Test 6: Write/Read Test -->
+            <div class="test-card" id="writeReadTest">
+                <h3>📝 Write/Read Test</h3>
+                <div class="status">
+                    <div class="status-icon wait">⏳</div>
+                    <div class="status-text">Ready for test...</div>
+                </div>
+                <button onclick="testWriteRead()">Test Write/Read</button>
+            </div>
+
+            <!-- Console Log -->
+            <div class="test-card full-width">
+                <h3>📋 Console Log</h3>
+                <div class="log" id="consoleLog"></div>
+                <button onclick="clearLog()">Clear Log</button>
+                <button onclick="downloadLog()">Download Log</button>
+            </div>
+
+            <!-- Firebase Status -->
+            <div class="test-card full-width">
+                <h3>📊 Firebase Status Details</h3>
+                <div id="statusDetails" class="code"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js"></script>
+    
+    <!-- Test Script -->
+    <script>
+        const LOG = [];
+        const FIREBASE_CONFIG = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "your-sender-id",
+            databaseURL: "https://your-project-default-rtdb.firebaseio.com"
+        };
+
+        // Override console to capture logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        console.log = function(...args) {
+            addLog('info', args.join(' '));
+            originalLog.apply(console, args);
+        };
+        console.error = function(...args) {
+            addLog('error', args.join(' '));
+            originalError.apply(console, args);
+        };
+        console.warn = function(...args) {
+            addLog('warn', args.join(' '));
+            originalWarn.apply(console, args);
+        };
+
+        function addLog(type, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = `[${timestamp}] ${message}`;
+            LOG.push({ type, message: entry });
+            updateLogDisplay();
+        }
+
+        function updateLogDisplay() {
+            const logDiv = document.getElementById('consoleLog');
+            logDiv.innerHTML = LOG.map(entry => 
+                `<div class="log-entry ${entry.type}">${entry.message}</div>`
+            ).join('');
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            LOG.length = 0;
+            updateLogDisplay();
+        }
+
+        function downloadLog() {
+            const text = LOG.map(e => e.message).join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'firebase-test.log';
+            a.click();
+        }
+
+        // Test Suite
+        async function runTests() {
+            console.log('=== Firebase Realtime Database Test Suite ===');
+            
+            // Test 1: Firebase SDK
+            testSDKLoad();
+            
+            // Test 2: Config
+            testConfig();
+            
+            // Test 3: App Init
+            await testAppInit();
+            
+            // Test 4: DB Ref
+            testDBRef();
+            
+            // Test 5: Connection
+            testConnection();
+
+            // Update status
+            updateStatusDetails();
+        }
+
+        function testSDKLoad() {
+            const card = document.getElementById('sdkTest');
+            const status = card.querySelector('.status');
+            
+            try {
+                const fbExists = typeof firebase !== 'undefined';
+                const dbExists = fbExists && typeof firebase.database !== 'undefined';
+                
+                if (fbExists && dbExists) {
+                    status.innerHTML = `
+                        <div class="status-icon ok">✓</div>
+                        <div class="status-text">Firebase SDK v${firebase.SDK_VERSION} loaded</div>
+                    `;
+                    card.classList.add('success');
+                    console.log('✅ Firebase SDK loaded successfully');
+                } else {
+                    status.innerHTML = `
+                        <div class="status-icon fail">✗</div>
+                        <div class="status-text">Firebase SDK not found</div>
+                    `;
+                    card.classList.add('error');
+                    console.error('❌ Firebase SDK failed to load');
+                }
+            } catch (e) {
+                status.innerHTML = `
+                    <div class="status-icon fail">✗</div>
+                    <div class="status-text">${e.message}</div>
+                `;
+                card.classList.add('error');
+                console.error('❌ SDK check error:', e);
+            }
+        }
+
+        function testConfig() {
+            const card = document.getElementById('configTest');
+            const status = card.querySelector('.status');
+            
+            try {
+                const hasApiKey = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== 'YOUR_API_KEY';
+                const hasDatabaseURL = FIREBASE_CONFIG.databaseURL && FIREBASE_CONFIG.databaseURL.includes('firebaseio.com');
+                
+                if (hasApiKey && hasDatabaseURL) {
+                    status.innerHTML = `
+                        <div class="status-icon ok">✓</div>
+                        <div class="status-text">Configuration valid</div>
+                    `;
+                    card.classList.add('success');
+                    console.log('✅ Firebase config is valid');
+                    console.log('📍 Database URL:', FIREBASE_CONFIG.databaseURL);
+                } else {
+                    status.innerHTML = `
+                        <div class="status-icon fail">✗</div>
+                        <div class="status-text">Config incomplete or invalid</div>
+                    `;
+                    card.classList.add('error');
+                    console.warn('⚠️ Firebase config has placeholders - update config.js');
+                    if (!hasApiKey) console.warn('  • API Key missing');
+                    if (!hasDatabaseURL) console.warn('  • Database URL missing or invalid');
+                }
+            } catch (e) {
+                status.innerHTML = `<div class="status-icon fail">✗</div><div class="status-text">${e.message}</div>`;
+                card.classList.add('error');
+                console.error('❌ Config check error:', e);
+            }
+        }
+
+        async function testAppInit() {
+            const card = document.getElementById('appInitTest');
+            const status = card.querySelector('.status');
+            
+            try {
+                if (firebase.getApps().length === 0) {
+                    const app = firebase.initializeApp(FIREBASE_CONFIG);
+                    status.innerHTML = `
+                        <div class="status-icon ok">✓</div>
+                        <div class="status-text">App initialized</div>
+                    `;
+                    card.classList.add('success');
+                    console.log('✅ Firebase app initialized successfully');
+                } else {
+                    status.innerHTML = `
+                        <div class="status-icon ok">✓</div>
+                        <div class="status-text">App already initialized</div>
+                    `;
+                    card.classList.add('success');
+                    console.log('✅ Firebase app already initialized');
+                }
+            } catch (e) {
+                status.innerHTML = `
+                    <div class="status-icon fail">✗</div>
+                    <div class="status-text">${e.message}</div>
+                `;
+                card.classList.add('error');
+                console.error('❌ App initialization failed:', e);
+            }
+        }
+
+        function testDBRef() {
+            const card = document.getElementById('dbRefTest');
+            const status = card.querySelector('.status');
+            
+            try {
+                const app = firebase.getApp();
+                const db = firebase.database(app);
+                
+                if (db) {
+                    status.innerHTML = `
+                        <div class="status-icon ok">✓</div>
+                        <div class="status-text">Database reference valid</div>
+                    `;
+                    card.classList.add('success');
+                    console.log('✅ Database reference obtained');
+                } else {
+                    throw new Error('Database reference is null');
+                }
+            } catch (e) {
+                status.innerHTML = `
+                    <div class="status-icon fail">✗</div>
+                    <div class="status-text">${e.message}</div>
+                `;
+                card.classList.add('error');
+                console.error('❌ Database reference error:', e);
+            }
+        }
+
+        function testConnection() {
+            const card = document.getElementById('connectionTest');
+            const status = card.querySelector('.status');
+            
+            try {
+                const app = firebase.getApp();
+                const db = firebase.database(app);
+                const connectedRef = firebase.database.ref(db, '.info/connected');
+                
+                firebase.database.onValue(connectedRef, (snapshot) => {
+                    if (snapshot.val() === true) {
+                        status.innerHTML = `
+                            <div class="status-icon ok">✓</div>
+                            <div class="status-text">Connected to Firebase</div>
+                        `;
+                        card.classList.remove('warning');
+                        card.classList.add('success');
+                        console.log('✅ Connected to Firebase Realtime Database');
+                    } else {
+                        status.innerHTML = `
+                            <div class="status-icon fail">✗</div>
+                            <div class="status-text">Not connected to Firebase</div>
+                        `;
+                        card.classList.remove('success');
+                        card.classList.add('error');
+                        console.error('❌ Firebase connection failed');
+                    }
+                });
+            } catch (e) {
+                status.innerHTML = `
+                    <div class="status-icon fail">✗</div>
+                    <div class="status-text">${e.message}</div>
+                `;
+                card.classList.add('error');
+                console.error('❌ Connection test error:', e);
+            }
+        }
+
+        async function testWriteRead() {
+            const card = document.getElementById('writeReadTest');
+            const status = card.querySelector('.status');
+            
+            try {
+                status.innerHTML = `
+                    <div class="status-icon wait">⏳</div>
+                    <div class="status-text">Testing write/read...</div>
+                `;
+                
+                const app = firebase.getApp();
+                const db = firebase.database(app);
+                const testRef = firebase.database.ref(db, 'firebase_test');
+                
+                // Write
+                console.log('Writing test data to Firebase...');
+                await firebase.database.set(testRef, {
+                    status: 'connected',
+                    time: Date.now(),
+                    message: 'Firebase connection test successful'
+                });
+                console.log('✅ Write successful');
+                
+                // Read
+                console.log('Reading test data from Firebase...');
+                const snapshot = await firebase.database.get(testRef);
+                const data = snapshot.val();
+                console.log('✅ Read successful:', data);
+                
+                status.innerHTML = `
+                    <div class="status-icon ok">✓</div>
+                    <div class="status-text">Write/Read test passed</div>
+                `;
+                card.classList.add('success');
+            } catch (e) {
+                console.error('❌ Write/Read test failed:', e);
+                status.innerHTML = `
+                    <div class="status-icon fail">✗</div>
+                    <div class="status-text">${e.message}</div>
+                `;
+                card.classList.add('error');
+            }
+        }
+
+        function updateStatusDetails() {
+            try {
+                const app = firebase.getApp();
+                const db = firebase.database(app);
+                const details = {
+                    'SDK Version': firebase.SDK_VERSION,
+                    'Firebase Apps': firebase.getApps().length,
+                    'Project ID': FIREBASE_CONFIG.projectId,
+                    'Database URL': FIREBASE_CONFIG.databaseURL,
+                    'Database Object': db ? 'Valid' : 'Invalid',
+                    'Status': window.firebaseDB ? window.firebaseDB.getConnectionStatus() : 'N/A'
+                };
+                
+                document.getElementById('statusDetails').innerHTML = 
+                    Object.entries(details).map(([key, val]) => 
+                        `<div><strong>${key}:</strong> ${typeof val === 'object' ? JSON.stringify(val) : val}</div>`
+                    ).join('');
+            } catch (e) {
+                document.getElementById('statusDetails').textContent = 'Error retrieving status: ' + e.message;
+            }
+        }
+
+        // Run tests when page loads
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>

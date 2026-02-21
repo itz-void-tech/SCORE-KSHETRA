@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCORE KSHETRA - Competitive Quiz Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600&family=Audiowide&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen active">
+        <div class="hero-container">
+            <h1 class="title-epic">⚔️ SCORE KSHETRA ⚔️</h1>
+            <p class="subtitle">🏛️ The Mythological Quiz Arena 🏛️<br><span
+                    style="font-size: 0.9em; opacity: 0.8;">Master the Epics. Rise through Divine Tiers.</span></p>
+
+            <div class="mode-selector">
+                <h2>SELECT YOUR CHALLENGE</h2>
+
+                <div class="mode-grid">
+                    <button class="mode-card classic" data-mode="classic">
+                        <div class="mode-icon">⚔️</div>
+                        <h3>Classic Quiz</h3>
+                        <p>Steady. Strategic. Timeless.</p>
+                        <span class="mode-badge">Balanced</span>
+                    </button>
+
+                    <button class="mode-card survival" data-mode="survival">
+                        <div class="mode-icon">🔥</div>
+                        <h3>Survival Test</h3>
+                        <p>One mistake ends it all.</p>
+                        <span class="mode-badge">Intense</span>
+                    </button>
+
+                    <button class="mode-card speed" data-mode="speed">
+                        <div class="mode-icon">⚡</div>
+                        <h3>Speed Mode</h3>
+                        <p>Answer fast. Earn bonus points.</p>
+                        <span class="mode-badge">Timed</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="leaderboard-section">
+                <h2>🏆 LEADERBOARD</h2>
+                <div id="leaderboard" class="leaderboard-table">
+                    <div id="leaderboardBody" class="leaderboard-body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="screen">
+        <div class="quiz-container">
+            <div class="quiz-header">
+                <div class="quiz-meta">
+                    <span class="mode-tag" id="modeTag"></span>
+                    <span class="question-counter" id="questionCounter"></span>
+                </div>
+                <button id="exitBtn" class="btn-exit">EXIT</button>
+            </div>
+
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+
+            <div class="anti-cheat-indicator">
+                <span id="tabWarning" class="tab-warning hidden">⚠️ Tab switches detected</span>
+                <span id="speedWarning" class="speed-warning hidden">⚠️ Answering too fast</span>
+            </div>
+
+            <div class="question-card">
+                <h2 id="question" class="question-text"></h2>
+                <div id="optionsContainer" class="options-container"></div>
+            </div>
+
+            <div class="timer-bar">
+                <div id="timerFill" class="timer-fill"></div>
+                <span id="timerText" class="timer-text"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" class="screen">
+        <div class="result-container">
+            <div id="tierBadge" class="tier-badge"></div>
+
+            <h1 id="resultTitle" class="result-title"></h1>
+
+            <div class="result-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Final Score</div>
+                    <div id="finalScore" class="stat-value"></div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Accuracy</div>
+                    <div id="accuracy" class="stat-value"></div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Tier Rank</div>
+                    <div id="tierDisplay" class="stat-value"></div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Mode</div>
+                    <div id="modeDisplay" class="stat-value"></div>
+                </div>
+            </div>
+
+            <div id="integrityAlert" class="integrity-alert hidden">
+                <p>⚠️ This attempt was flagged for suspicious behavior. Score reflects integrity adjustment.</p>
+            </div>
+
+            <div class="result-actions">
+                <button id="certificateBtn" class="btn-primary">VIEW CERTIFICATE</button>
+                <button id="shareBtn" class="btn-secondary">SHARE</button>
+                <button id="retryBtn" class="btn-secondary">TRY AGAIN</button>
+                <button id="homeBtn" class="btn-secondary">HOME</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Certificate Screen -->
+    <div id="certificateScreen" class="screen">
+        <div class="certificate-container">
+            <!-- Canvas for certificate image -->
+            <canvas id="certificateCanvas" class="certificate-canvas" style="display: none;"></canvas>
+
+            <!-- Certificate preview -->
+            <div class="certificate-preview">
+                <img id="certificateImage" class="certificate-img" src="" alt="Certificate">
+            </div>
+
+            <div class="certificate-actions">
+                <button id="downloadBtn" class="btn-primary">⬇️ DOWNLOAD CERTIFICATE</button>
+                <button id="copyShareBtn" class="btn-secondary">COPY SHARE LINK</button>
+                <button id="backResultBtn" class="btn-secondary">BACK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Public Certificate View (no auth required) -->
+    <div id="publicCertScreen" class="screen">
+        <div class="public-cert-container">
+            <button id="closeCertBtn" class="btn-close">×</button>
+            <div id="publicCertContent"></div>
+        </div>
+    </div>
+
+    <!-- Player Name Input Modal -->
+    <div id="nameModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Enter Your Name</h2>
+            <input id="playerNameInput" type="text" placeholder="Your epic name..." maxlength="30">
+            <div class="modal-actions">
+                <button id="startQuizBtn" class="btn-primary">START</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Realtime Database SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+
+    <!-- Utility Scripts (before firebase-config) -->
+    <script src="config.js"></script>
+    <script src="epic-questions.js"></script>
+    <script src="integrity.js"></script>
+    <script src="tiers.js"></script>
+    <script src="offline.js"></script>
+    <script src="modes.js"></script>
+    <script src="storage.js"></script>
+
+    <!-- Firebase Config & Global Leaderboard -->
+    <script src="firebase-config.js"></script>
+    <script src="global-leaderboard.js"></script>
+
+    <!-- Certificate Generator -->
+    <script src="certificate-generator.js"></script>
+
+    <!-- Main app -->
+    <script src="script.js"></script>
+
+    <!-- Epic Footer NavBar -->
+    <footer id="epicFooter" class="epic-footer">
+        <div class="footer-divider">
+            <span>✦ DIVINE ARCHITECTS ✦</span>
+        </div>
+        <div class="footer-content">
+            <div class="footer-member">
+                <div class="member-icon">👨‍💻</div>
+                <div class="member-info">
+                    <h3>Swarnendu Kundu</h3>
+                    <p>Tech Head</p>
+                </div>
+            </div>
+            <div class="footer-divider-vertical">|</div>
+            <div class="footer-member">
+                <div class="member-icon">👨‍💼</div>
+                <div class="member-info">
+                    <h3>Ayush Shukla</h3>
+                    <p>Tech Member</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-decoration">
+            <span class="decoration-symbol">✧ </span>
+            <span>Built with 🔥 for Epic Knowledge</span>
+            <span class="decoration-symbol"> ✧</span>
+        </div>
+    </footer>
+</body>
+
+</html>
