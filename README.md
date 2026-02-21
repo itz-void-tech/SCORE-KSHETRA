@@ -26,7 +26,7 @@
 - **Tier displays** on result page, certificate, and leaderboard
 - **Dynamic styling**: Glow effects and color themes per tier
 
-![Main Page Interface](images/mainpage.jpeg)
+<img src="images/mainpage.jpeg" alt="Main Page Interface" width="250" height="500">
 
 ### 3️⃣ **Shareable Public Certificates**
 - **Unique URL per certificate**: `/index.html?certId=CERT_ID`
@@ -37,7 +37,7 @@
   - Certificate ID for authenticity
 - **One-click share link** button
 
-![View Certificate Screen](images/viewcertificate.jpeg)
+<img src="images/viewcertificate.jpeg" alt="View Certificate Screen" width="200" height="400">
 
 ### 4️⃣ **Offline-First Support**
 - **Local caching**: Questions and progress saved in `localStorage`.
@@ -52,7 +52,7 @@ Three distinct modes affecting scoring, difficulty, and gameplay:
 | **Survival** | 🔥 | One wrong = end | 30s | 1 | 1.5x |
 | **Speed** | ⚡ | Fast answers earn bonus | 15s | 3 | 1.3x |
 
-![Game Mode Selection](images/main2ndpage.jpeg)
+<img src="images/main2ndpage.jpeg" alt="Game Mode Selection" width="200" height="400">
 
 ---
 
@@ -64,7 +64,7 @@ Three distinct modes affecting scoring, difficulty, and gameplay:
 3. **Answer Questions**: Select from 4 options per question.
 4. **View Results**: See your final score, tier, and generated certificate.
 
-![Name Entry Screen](images/youcanenteryournameforcertific.jpeg)
+<img src="images/youcanenteryournameforcertificate.jpeg" alt="Name Entry Screen" width="250" height="400">
 
 ### Scoring Rules
 Base Score = 10 points per correct answer
@@ -83,11 +83,11 @@ $$Speed Bonus = 10 \times \frac{TimePerQ - AnswerTime}{TimePerQ} \times 0.5$$
 
 Once the quiz is complete, players receive a comprehensive breakdown of their performance, including accuracy percentages and their earned Tier.
 
-![Result Page](images/resultpage.jpeg)
+<img src="images/resultpage.jpeg" alt="Result Page" width="200" height="400">
 
 Players can then generate a public link to showcase their achievements to the community.
 
-![Share Result Options](images/resultshare.jpeg)
+<img src="images/resultshare.jpeg" alt="Share Result Options" width="275" height="400">
 
 ---
 
@@ -102,6 +102,7 @@ index.html             # Main UI structure
 ├── storage.js         # localStorage management
 ├── firebase-config.js # Firebase sync (optional)
 └── script.js          # Main app orchestration
+
 style.css              # Responsive, dark-mode design
 
 
@@ -116,50 +117,3 @@ style.css              # Responsive, dark-mode design
 
 ---
 
-## 🚀 Setup Instructions
-
-### 1. Basic Setup (No Backend)
-```bash
-# Clone the repository
-git clone [https://github.com/yourusername/score-kshetra.git](https://github.com/yourusername/score-kshetra.git)
-
-# Serve with Python
-python -m http.server 8000
-2. Firebase Integration (Optional)
-Update firebase-config.js with your credentials to enable the global leaderboard and certificate verification features.
-
-🎯 Integrity Flagging Rules
-Tab switches: Flagged if player leaves the tab > 2 times.
-
-Speed violations: Flagged if ≥ 3 questions are answered in < 1 second.
-
-Consequences: A ⚠️ badge appears on the leaderboard and a 20% point reduction is applied.
-
-🎨 Customization
-Change Colors
-Edit the CSS variables in style.css:
-
-CSS
-:root {
-    --accent: #00d4ff;    /* Cyan */
-    --accent-alt: #ff1493; /* Magenta */
-}
-📝 License
-Open source for educational use.
-
-Happy quizzing! Rise to Divine tier. 👑
-
-
----
-
-### What I updated:
-1.  **Added Live Link:** Placed prominently at the top under the header.
-2.  **Integrated Images:** * `mainpage.jpeg`: Under the Tier system to show the UI.
-    * `viewcertificate.jpeg`: Under the Certificate section.
-    * `main2ndpage.jpeg`: Under the Game Modes table.
-    * `youcanenteryournameforcertific.jpeg`: Under the "How to Play" section.
-    * `resultpage.jpeg`: Under a new "Results & Sharing" section.
-    * `resultshare.jpeg`: Also under the sharing section.
-3.  **Refined Math:** Converted your speed bonus formula to proper LaTeX for a more professional look.
-
-----
