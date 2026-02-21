@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tier System Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+        .test-container {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .test-section {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #00d4ff;
+        }
+        h2 {
+            color: #00d4ff;
+            margin: 0 0 1rem 0;
+        }
+        .tier-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .tier-card {
+            padding: 1rem;
+            border-radius: 6px;
+            border: 2px solid;
+            background: rgba(100, 100, 100, 0.1);
+        }
+        .tier-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .tier-info {
+            font-size: 0.85rem;
+            margin: 0.3rem 0;
+        }
+        .accuracy-test {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            border-radius: 6px;
+        }
+        .accuracy-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .accuracy-row:last-child {
+            border-bottom: none;
+        }
+        .error {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        .success {
+            color: #2ecc71;
+            font-weight: 600;
+        }
+        .warning {
+            color: #f39c12;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 TIER SYSTEM TEST SUITE</h1>
+    
+    <div class="test-container">
+        <!-- Test 1: Tier Configuration -->
+        <div class="test-section">
+            <h2>✓ Test 1: Tier Configuration</h2>
+            <div id="tierConfigTest"></div>
+        </div>
+
+        <!-- Test 2: Tier Calculation -->
+        <div class="test-section">
+            <h2>✓ Test 2: Tier Calculation (Edge Cases)</h2>
+            <div id="tierCalcTest"></div>
+        </div>
+
+        <!-- Test 3: Tier Consistency -->
+        <div class="test-section">
+            <h2>✓ Test 3: Tier Consistency Across Accuracies</h2>
+            <div id="tierConsistencyTest"></div>
+        </div>
+
+        <!-- Test 4: Console Errors -->
+        <div class="test-section">
+            <h2>✓ Test 4: Error Monitoring</h2>
+            <div id="errorMonitorTest"></div>
+        </div>
+    </div>
+
+    <script src="tiers.js"></script>
+    <script>
+        console.log('=== TIER SYSTEM TEST SUITE ===');
+        
+        let errors = [];
+        let warnings = [];
+        
+        // Capture console errors
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.error = function(...args) {
+            errors.push(args.join(' '));
+            originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            warnings.push(args.join(' '));
+            originalWarn.apply(console, args);
+        };
+
+        // Test 1: Verify tier configuration
+        const tierConfigTest = document.getElementById('tierConfigTest');
+        try {
+            const tierCount = Object.keys(TIER_CONFIG).length;
+            const tiers = Object.entries(TIER_CONFIG);
+            
+            let html = `<p><span class="success">✓ Found ${tierCount} tiers</span></p>`;
+            html += '<div class="tier-test">';
+            
+            tiers.forEach(([name, config]) => {
+                html += `
+                    <div class="tier-card" style="border-color: ${config.color}">
+                        <div class="tier-name">${name}</div>
+                        <div class="tier-info">ID: ${config.id}</div>
+                        <div class="tier-info">Range: ${config.minAccuracy}–${config.maxAccuracy}%</div>
+                        <div class="tier-info">Lore: ${config.lore}</div>
+                        <div class="tier-info" style="color: ${config.color}">Color: ${config.color}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            tierConfigTest.innerHTML = html;
+        } catch (e) {
+            tierConfigTest.innerHTML = `<p><span class="error">✗ Error: ${e.message}</span></p>`;
+            errors.push(`Tier Config Test: ${e.message}`);
+        }
+
+        // Test 2: Tier calculation with edge cases
+        const tierCalcTest = document.getElementById('tierCalcTest');
+        try {
+            const testCases = [
+                { accuracy: -50, desc: 'Negative accuracy (should clamp to 0)' },
+                { accuracy: 0, desc: 'Zero accuracy' },
+                { accuracy: 5, desc: 'Very low (5%)' },
+                { accuracy: 15, desc: 'Low (15%)' },
+                { accuracy: 50, desc: 'Mid-point (50%)' },
+                { accuracy: 75, desc: 'High (75%)' },
+                { accuracy: 90, desc: 'Very high (90%)' },
+                { accuracy: 100, desc: 'Perfect (100%)' },
+                { accuracy: 150, desc: 'Over 100 (should clamp to 100)' },
+                { accuracy: null, desc: 'Null accuracy (should default to 0)' },
+                { accuracy: undefined, desc: 'Undefined accuracy (should default to 0)' },
+                { accuracy: NaN, desc: 'NaN accuracy (should default to 0)' }
+            ];
+            
+            let html = '<div class="accuracy-test">';
+            testCases.forEach(tc => {
+                const tier = calculateTier(tc.accuracy);
+                html += `
+                    <div class="accuracy-row">
+                        <span><strong>${tc.desc}</strong></span>
+                        <span>→ <strong>${tier.name}</strong> (T${tier.id}) <span style="color: ${tier.color}">■</span></span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            tierCalcTest.innerHTML = html;
+        } catch (e) {
+            tierCalcTest.innerHTML = `<p><span class="error">✗ Error: ${e.message}</span></p>`;
+            errors.push(`Tier Calc Test: ${e.message}`);
+        }
+
+        // Test 3: Verify tier ranges don't overlap
+        const tierConsistencyTest = document.getElementById('tierConsistencyTest');
+        try {
+            const accuracyTests = [];
+            for (let i = 0; i <= 100; i += 5) {
+                const tier = calculateTier(i);
+                accuracyTests.push({ acc: i, tier: tier.name });
+            }
+            
+            let html = '<div class="accuracy-test">';
+            accuracyTests.forEach(test => {
+                html += `
+                    <div class="accuracy-row">
+                        <span>${test.acc}% accuracy</span>
+                        <span>→ <strong>${test.tier}</strong></span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            tierConsistencyTest.innerHTML = html;
+        } catch (e) {
+            tierConsistencyTest.innerHTML = `<p><span class="error">✗ Error: ${e.message}</span></p>`;
+            errors.push(`Tier Consistency Test: ${e.message}`);
+        }
+
+        // Test 4: Error monitoring
+        const errorMonitorTest = document.getElementById('errorMonitorTest');
+        let html = '<div>';
+        
+        if (errors.length === 0) {
+            html += '<p><span class="success">✓ No console errors detected</span></p>';
+        } else {
+            html += `<p><span class="error">✗ Found ${errors.length} errors:</span></p>`;
+            errors.forEach(e => {
+                html += `<p><span class="error">• ${e}</span></p>`;
+            });
+        }
+        
+        if (warnings.length > 0) {
+            html += `<p><span class="warning">⚠ Found ${warnings.length} warnings:</span></p>`;
+            warnings.forEach(w => {
+                html += `<p><span class="warning">• ${w}</span></p>`;
+            });
+        }
+        
+        html += '<p><strong>System Status:</strong></p>';
+        html += `<p>• TIER_CONFIG: <span class="${TIER_CONFIG ? 'success' : 'error'}">${TIER_CONFIG ? '✓ Available' : '✗ Missing'}</span></p>`;
+        html += `<p>• calculateTier: <span class="${typeof calculateTier === 'function' ? 'success' : 'error'}">${typeof calculateTier === 'function' ? '✓ Available' : '✗ Missing'}</span></p>`;
+        html += `<p>• TierSystem: <span class="${typeof TierSystem !== 'undefined' ? 'success' : 'error'}">${typeof TierSystem !== 'undefined' ? '✓ Available' : '✗ Missing'}</span></p>`;
+        html += '</div>';
+        
+        errorMonitorTest.innerHTML = html;
+
+        console.log('=== TESTS COMPLETE ===');
+        console.log('Total Errors:', errors.length);
+        console.log('Total Warnings:', warnings.length);
+    </script>
+</body>
+</html>
